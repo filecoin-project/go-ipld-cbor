@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"math/big"
 	"sort"
 	"strings"
 	"testing"
@@ -534,4 +535,73 @@ func TestCanonicalStructEncoding(t *testing.T) {
 	if !bytes.Equal(expraw, m.RawData()) {
 		t.Fatal("not canonical")
 	}
+}
+
+type TestMe struct {
+	Hello *big.Int
+	World big.Int
+	Hi    int
+}
+
+func TestBigIntRoundtrip(t *testing.T) {
+	RegisterCborType(BigIntAtlasEntry)
+	RegisterCborType(TestMe{})
+
+	one := TestMe{
+		Hello: big.NewInt(100),
+		World: *big.NewInt(99),
+	}
+
+	bytes, err := DumpObject(&one)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var oneBack TestMe
+	if err := DecodeInto(bytes, &oneBack); err != nil {
+		t.Fatal(err)
+	}
+
+	if one.Hello.Cmp(oneBack.Hello) != 0 {
+		t.Fatal("failed to roundtrip *big.Int")
+	}
+
+	if one.World.Cmp(&oneBack.World) != 0 {
+		t.Fatal("failed to roundtrip big.Int")
+	}
+
+	list := map[string]*TestMe{
+		"hello": &TestMe{Hello: big.NewInt(10), World: *big.NewInt(101), Hi: 1},
+		"world": &TestMe{Hello: big.NewInt(9), World: *big.NewInt(901), Hi: 3},
+	}
+
+	bytes, err = DumpObject(list)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var listBack map[string]*TestMe
+	if err := DecodeInto(bytes, &listBack); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(listBack["hello"])
+	t.Log(listBack["world"])
+
+	if list["hello"].Hello.Cmp(listBack["hello"].Hello) != 0 {
+		t.Fatalf("failed to roundtrip *big.Int: %s != %s", list["hello"].Hello, listBack["hello"].Hello)
+	}
+
+	if list["hello"].World.Cmp(&listBack["hello"].World) != 0 {
+		t.Fatalf("failed to roundtrip big.Int: %s != %s", &list["hello"].World, &listBack["hello"].World)
+	}
+
+	if list["world"].Hello.Cmp(listBack["world"].Hello) != 0 {
+		t.Fatalf("failed to roundtrip *big.Int: %s != %s", list["world"].Hello, listBack["world"].Hello)
+	}
+
+	if list["world"].World.Cmp(&listBack["world"].World) != 0 {
+		t.Fatalf("failed to roundtrip big.Int: %s != %s", &list["world"].World, &listBack["world"].World)
+	}
+
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -56,6 +57,19 @@ var cidAtlasEntry = atlas.BuildEntry(cid.Cid{}).
 	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(
 		castBytesToCid,
 	)).
+	Complete()
+
+// BigIntAtlasEntry gives a reasonable default encoding for big.Int.
+// It is not included in the entries by default.
+var BigIntAtlasEntry = atlas.BuildEntry(big.Int{}).Transform().
+	TransformMarshal(atlas.MakeMarshalTransformFunc(
+		func(i big.Int) ([]byte, error) {
+			return i.Bytes(), nil
+		})).
+	TransformUnmarshal(atlas.MakeUnmarshalTransformFunc(
+		func(x []byte) (big.Int, error) {
+			return *big.NewInt(0).SetBytes(x), nil
+		})).
 	Complete()
 
 var cborAtlas atlas.Atlas
