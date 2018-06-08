@@ -59,7 +59,9 @@ var cidAtlasEntry = atlas.BuildEntry(cid.Cid{}).
 	)).
 	Complete()
 
-var bigIntAtlasEntry = atlas.BuildEntry(big.Int{}).Transform().
+// BigIntAtlasEntry gives a reasonable default encoding for big.Int.
+// It is not included in the entries by default.
+var BigIntAtlasEntry = atlas.BuildEntry(big.Int{}).Transform().
 	TransformMarshal(atlas.MakeMarshalTransformFunc(
 		func(i big.Int) ([]byte, error) {
 			return i.Bytes(), nil
@@ -72,10 +74,10 @@ var bigIntAtlasEntry = atlas.BuildEntry(big.Int{}).Transform().
 
 var cborAtlas atlas.Atlas
 var cborSortingMode = atlas.KeySortMode_RFC7049
-var atlasEntries = []*atlas.AtlasEntry{cidAtlasEntry, bigIntAtlasEntry}
+var atlasEntries = []*atlas.AtlasEntry{cidAtlasEntry}
 
 func init() {
-	cborAtlas = atlas.MustBuild(cidAtlasEntry, bigIntAtlasEntry).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
+	cborAtlas = atlas.MustBuild(cidAtlasEntry).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
 }
 
 // RegisterCborType allows to register a custom cbor type

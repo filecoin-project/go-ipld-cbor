@@ -544,6 +544,7 @@ type TestMe struct {
 }
 
 func TestBigIntRoundtrip(t *testing.T) {
+	RegisterCborType(BigIntAtlasEntry)
 	RegisterCborType(TestMe{})
 
 	one := TestMe{
