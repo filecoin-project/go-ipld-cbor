@@ -21,9 +21,9 @@
     },
     {
       "author": "whyrusleeping",
-      "hash": "QmNiJuT8Ja3hMVpBHXv3Q6dwmperaQ6JjLtpMQgMCD7xvx",
+      "hash": "QmPdKqUcHGFdeSpvjVoaTRPPstGif9GBZb5Q56RVw9o69A",
       "name": "go-ipfs-util",
-      "version": "1.2.7"
+      "version": "1.2.8"
     },
     {
       "author": "whyrusleeping",
@@ -55,6 +55,6 @@
   "license": "",
   "name": "go-ipld-cbor",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "1.4.2"
+  "version": "1.4.3"
 }
 
