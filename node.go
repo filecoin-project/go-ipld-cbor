@@ -72,12 +72,12 @@ var BigIntAtlasEntry = atlas.BuildEntry(big.Int{}).Transform().
 		})).
 	Complete()
 
-var cborAtlas atlas.Atlas
+var CborAtlas atlas.Atlas
 var cborSortingMode = atlas.KeySortMode_RFC7049
 var atlasEntries = []*atlas.AtlasEntry{cidAtlasEntry}
 
 func init() {
-	cborAtlas = atlas.MustBuild(cidAtlasEntry).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
+	CborAtlas = atlas.MustBuild(cidAtlasEntry).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
 }
 
 // RegisterCborType allows to register a custom cbor type
@@ -89,7 +89,7 @@ func RegisterCborType(i interface{}) {
 		entry = atlas.BuildEntry(i).StructMap().AutogenerateWithSortingScheme(atlas.KeySortMode_RFC7049).Complete()
 	}
 	atlasEntries = append(atlasEntries, entry)
-	cborAtlas = atlas.MustBuild(atlasEntries...).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
+	CborAtlas = atlas.MustBuild(atlasEntries...).WithMapMorphism(atlas.MapMorphism{atlas.KeySortMode_RFC7049})
 }
 
 // DecodeBlock decodes a CBOR encoded Block into an IPLD Node.
@@ -157,12 +157,12 @@ func Decode(b []byte, mhType uint64, mhLen int) (*Node, error) {
 // DecodeInto decodes a serialized IPLD cbor object into the given object.
 func DecodeInto(b []byte, v interface{}) error {
 	// The cbor library really doesnt make this sort of operation easy on us
-	return cbor.UnmarshalAtlased(b, v, cborAtlas)
+	return cbor.UnmarshalAtlased(b, v, CborAtlas)
 }
 
 // WrapObject converts an arbitrary object into a Node.
 func WrapObject(m interface{}, mhType uint64, mhLen int) (*Node, error) {
-	data, err := cbor.MarshalAtlased(m, cborAtlas)
+	data, err := cbor.MarshalAtlased(m, CborAtlas)
 	if err != nil {
 		return nil, err
 	}
@@ -459,7 +459,7 @@ func (n *Node) MarshalJSON() ([]byte, error) {
 // DumpObject marshals any object into its CBOR serialized byte representation
 // TODO: rename
 func DumpObject(obj interface{}) (out []byte, err error) {
-	return cbor.MarshalAtlased(obj, cborAtlas)
+	return cbor.MarshalAtlased(obj, CborAtlas)
 }
 
 func toSaneMap(n map[interface{}]interface{}) (interface{}, error) {
