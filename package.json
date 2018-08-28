@@ -55,5 +55,6 @@
   "license": "",
   "name": "go-ipld-cbor",
   "releaseCmd": "git commit -a -m \"gx publish $VERSION\"",
-  "version": "1.4.7"
+  "version": "1.4.8"
 }
+
